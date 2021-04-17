@@ -190,7 +190,7 @@ cdc_risk_ind <- function(x, base_risk = 0.00003) {
   if (x$Age < 84.5) return(2800 * base_risk)
   7900 * base_risk
 }
-x <- data.frame(Age = 25)
+x <- data.frame(Age = 25, Hospitalisation = "Yes")
 cdc_risk_ind(x)
 
 ```
@@ -288,6 +288,7 @@ Model exploration starts with an assessment of how good is the model.  The `DALE
 
 
 ```{r, warning=FALSE, message=FALSE}
+#library(ROCR)
 mp_cdc <- model_performance(model_cdc, cutoff = 0.1)
 mp_cdc
 ```
@@ -366,12 +367,15 @@ model_tree <-  DALEX::explain(tree,
                    verbose = FALSE)
 ```
 
+
 ### Test your model
 
 ```{r, warning=FALSE, message=FALSE}
 mp_tree <- model_performance(model_tree, cutoff = 0.1)
 mp_tree
 plot(mp_tree, geom = "roc")
+
+hist(predict(model_tree, covid_summer))
 
 plot(mp_tree, mp_cdc, geom = "roc")
 ```
@@ -381,6 +385,30 @@ plot(mp_tree, mp_cdc, geom = "roc")
 - Check the AUC for CDC model on the `covid_spring` data. 
 - Plot ROC for both `covid_spring` and `covid_summer` data.
 - (*)Try to overfit.
+
+
+Example for titanic
+
+```
+head(titanic_imputed)
+tree <- ctree(survived ~., titanic_imputed)
+plot(tree)
+
+tree <- ctree(factor(survived) ~., titanic_imputed, 
+              control = ctree_control(alpha = 0.0001))
+plot(tree)
+
+model_tree <-  DALEX::explain(tree,
+                   predict_function = function(m, x) predict(m, x, type = "prob")[,2],
+                   data = titanic_imputed,
+                   y = titanic_imputed$survived == 1,
+                   type = "classification",
+                   label = "Tree",
+                   verbose = FALSE)
+mp <- model_performance(model_tree)
+mp
+plot(mp, geom = "roc")
+```
 
 ## Plant a forest
 
@@ -410,8 +438,12 @@ library("ranger")
 covid_ranger <- lrn("classif.ranger", predict_type = "prob",
                 num.trees = 25)
 covid_ranger
+predict(covid_ranger, covid_summer[1:3,])
 
 covid_ranger$train(covid_task)
+covid_ranger$model
+predict(covid_ranger, covid_summer[1:3,], predict_type = "prob")[,1]
+
 ```
 
 ### Test your model
