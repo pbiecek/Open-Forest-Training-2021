@@ -719,11 +719,11 @@ For linear models it is easy to assess the impact of individual variables becaus
 ```{r}
 john <- data.frame(Gender = factor("Male", levels = c("Male", "Female")),
                    Age = 76,
-                   Cardiovascular.Diseases = factor("Yes", levels = c("Yes", "No")), 
-                   Diabetes = factor("No", levels = c("Yes", "No")), 
-                   Neurological.Diseases = factor("No", levels = c("Yes", "No")), 
-                   Kidney.Diseases = factor("No", levels = c("Yes", "No")), 
-                   Cancer = factor("No", levels = c("Yes", "No")))
+                   Cardiovascular.Diseases = factor("Yes", levels = c("No", "Yes")), 
+                   Diabetes = factor("No", levels = c("No", "Yes")), 
+                   Neurological.Diseases = factor("No", levels = c("No", "Yes")), 
+                   Kidney.Diseases = factor("No", levels = c("No", "Yes")), 
+                   Cancer = factor("No", levels = c("No", "Yes")))
 john
 ```
 
@@ -760,6 +760,12 @@ ppart_cdc <- predict_parts(model_cdc, john)
 plot(ppart_cdc)
 ```
 
+
+```{r, message=FALSE, warning=FALSE, fig.width=6, fig.height=2.5}
+ppart_tuned <- predict_parts(model_tuned, john)
+plot(ppart_tuned)
+```
+
 ## Your turn
 
 - Compare results for `covid_summer` with results on the `covid_spring` data.
@@ -793,6 +799,8 @@ mprof_cdc <- predict_profile(model_cdc, variable_splits = list(Age=0:100), john)
 mprof_tree <- predict_profile(model_tree, variable_splits = list(Age=0:100), john)
 mprof_ranger <- predict_profile(model_ranger, variable_splits = list(Age=0:100), john)
 mprof_tuned <- predict_profile(model_tuned, variable_splits = list(Age=0:100), john)
+
+plot(mprof_tuned)
 
 plot(mprof_tuned, mprof_cdc, mprof_tree, mprof_ranger)
 ```
