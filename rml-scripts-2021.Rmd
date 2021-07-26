@@ -624,6 +624,7 @@ plot(mpart_ranger, show_boxplots = FALSE, bar_width=4) +
 ```{r, message=FALSE, warning=FALSE, fig.width=6, fig.height=7}
 mpart_cdc <- model_parts(model_cdc)
 mpart_tree <- model_parts(model_tree)
+mpart_ranger <- model_parts(model_ranger)
 mpart_tuned <- model_parts(model_tuned)
 
 plot(mpart_cdc, mpart_tree, mpart_ranger, mpart_tuned, show_boxplots = FALSE, bar_width=4) +
